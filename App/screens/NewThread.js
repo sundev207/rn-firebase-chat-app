@@ -1,31 +1,33 @@
-import React from 'react';
-import {View} from 'react-native';
+import React, { useState } from 'react';
+import { View } from 'react-native';
 
-import {TextField, Button} from '../components/Form';
+import { TextField, Button } from '../components/Form';
+import { createNewThread } from '../firebase';
 
-export default class NewThread extends React.Component {
-  state = {
-    name: '',
-    loading: false,
+export default ({ navigation }) => {
+  const [threadName, setThreadName] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handlePress = () => {
+    setLoading(true);
+    createNewThread(threadName)
+      .then(() => {
+        navigation.pop();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  handlePress = () => {
-    alert(`New thread name: ${this.state.name}`);
-  };
-
-  render() {
-    return (
-      <View style={{flex: 1, justifyContent: 'center'}}>
-        <TextField
-          placeholder="Thread Name"
-          onChangeText={name => this.setState({name})}
-        />
-        <Button
-          onPress={this.handlePress}
-          title="Create"
-          disabled={this.state.loading}
-        />
-      </View>
-    );
-  }
-}
+  return (
+    <View
+      style={{ flex: 1, justifyContent: 'center', backgroundColor: '#fff' }}
+    >
+      <TextField
+        placeholder="Thread Name"
+        onChangeText={(name) => setThreadName(name)}
+      />
+      <Button onPress={handlePress} title="Create" disabled={loading} />
+    </View>
+  );
+};
